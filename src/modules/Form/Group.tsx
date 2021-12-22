@@ -1,16 +1,20 @@
 import { useFormik } from "formik";
 import { ChangeEvent, FunctionComponent } from "react";
 import { UserSelection } from "./UserSelection";
-import { IGroup, IGroupModel } from "../../store/model/group";
+import { IGroup } from "../../store/model/group";
+import { useStoreActions } from "../../store/hooks";
+import { schema } from "./groupSchema";
 
 export const GroupForm: FunctionComponent = () => {
+  const setGroup = useStoreActions((actions) => actions.group.setGroups);
   const formik = useFormik<Omit<IGroup, "id">>({
     initialValues: {
       name: "",
       users: [],
     },
+    validationSchema: schema,
     onSubmit: (values) => {
-      console.log(values);
+      setGroup(values);
     },
   });
 
@@ -37,8 +41,8 @@ export const GroupForm: FunctionComponent = () => {
   };
 
   return (
-    <form>
-      <div className="mb-4">
+    <form onSubmit={formik.handleSubmit}>
+      <section className="mb-4">
         <label
           className="block text-gray-700 text-sm font-bold mb-1"
           htmlFor="name"
@@ -50,9 +54,25 @@ export const GroupForm: FunctionComponent = () => {
           id="name"
           type="text"
           placeholder="Name"
+          value={formik.values.name}
+          onChange={formik.handleChange}
         />
-      </div>
-      <UserSelection users={formik.values.users} handleUser={handleUser} />
+        {formik.errors.name && (
+          <span className="text-sm text-red-600">{formik.errors.name}</span>
+        )}
+      </section>
+      <section>
+        <UserSelection users={formik.values.users} handleUser={handleUser} />
+        {formik.errors.users && (
+          <span className="text-sm text-red-600">{formik.errors.users}</span>
+        )}
+      </section>
+      <button
+        type="submit"
+        className="bg-yellow-400 text-yellow-900 py-2 px-4 rounded-lg shadow-md"
+      >
+        Create Group
+      </button>
     </form>
   );
 };
