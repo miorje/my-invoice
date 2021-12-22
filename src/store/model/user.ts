@@ -1,21 +1,23 @@
-import {action, Action, persist} from "easy-peasy";
+import { Action, action, persist } from "easy-peasy";
 
-
-interface IUser{
-    id:string,
-    name:string
+export interface IUser {
+    id: string;
+    name: string;
 }
 
 export interface IUserModel {
-    users:IUser[],
-    setUsers: Action<IUserModel, IUser>;
+    users: IUser[];
+    setUsers: Action<IUserModel, string>;
 }
 
-export const userModel: IUserModel = persist({
-    users:[],
-    setUsers: action((state,user)=> {
-        state.users.push(user)
-    })
-},{
-    storage: "localStorage"
-});
+export const userModel: IUserModel = persist(
+    {
+        users: [],
+        setUsers: action((state, name) => {
+            state.users.push({ name, id: `user-${new Date().getTime()}` });
+        })
+    },
+    {
+        storage: "localStorage"
+    }
+);
