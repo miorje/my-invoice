@@ -1,28 +1,24 @@
-import { action, Action, persist, thunk, Thunk } from "easy-peasy";
-import Router from "next/router";
+import { Action, action, persist, thunk, Thunk } from "easy-peasy";
 import { IStoreModel } from "../index";
-import exp from "constants";
 import { IUser } from "./user";
+import { IGetExpenseByGroup } from "./expense";
 
 export interface IGroup {
-  id?: string;
+  id?: string; // autogenerate
+
   name: string;
-  users: string[];
+  users: string[]; // user.id
+}
+
+export interface IGetGroup extends Omit<IGroup, "users"> {
+  users: (IUser | undefined)[];
+  expenses: IGetExpenseByGroup[];
 }
 
 export interface IGroupModel {
   groups: IGroup[];
   setGroups: Action<IGroupModel, IGroup>;
-  getGroup: Thunk<
-    IGroupModel,
-    IStoreModel,
-    IGroup , IGetGroup
-  >;
-
-}
-
-export interface IGetGroup extends Omit<IGroup, "users"> {
-  users: IUser[];
+  getGroup: Thunk<IGroupModel, string, undefined, IStoreModel, IGetGroup>;
 }
 
 export const groupModel: IGroupModel = persist(
@@ -30,7 +26,6 @@ export const groupModel: IGroupModel = persist(
     groups: [],
     setGroups: action((state, group) => {
       group["id"] = `group-${new Date().getTime()}`;
-
       state.groups.push(group);
     }),
     getGroup: thunk((actions, groupId, helpers) => {
@@ -38,22 +33,25 @@ export const groupModel: IGroupModel = persist(
         .getState()
         .groups.find((group) => group.id === groupId);
 
-      const users = group?.users.map((userId) =>
-        helpers.getStoreActions().user.getUser(userId)
-      );
-
-      console.log("dekat sini: ", users);
-
       if (!group) {
         return {
           id: "",
-          users: [],
           name: "",
+          users: [],
+          expenses: [],
         };
       }
+
+      const users = group.users.map((userId) =>
+        helpers.getStoreActions().user.getUser(userId)
+      );
+
+      const expenses = helpers.getStoreActions().expense.getExpenseByGroup(groupId);
+
       return {
         ...group,
         users,
+        expenses,
       };
     }),
   },
