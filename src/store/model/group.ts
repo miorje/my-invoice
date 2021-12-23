@@ -1,21 +1,24 @@
 import { action, Action, persist } from "easy-peasy";
+import Router from "next/router";
 
 export interface IGroup {
-  id: string;
+  id?: string;
   name: string;
   users: string[];
 }
 
 export interface IGroupModel {
   groups: IGroup[];
-  setGroups: Action<IGroupModel, Omit<IGroup, "id">>;
+  setGroups: Action<IGroupModel, IGroup>;
 }
 
 export const groupModel: IGroupModel = persist(
   {
     groups: [],
     setGroups: action((state, group) => {
-      state.groups.push({ id: `grups-${new Date().getTime()}`,...group });
+      group["id"] = `group-${new Date().getTime()}`;
+
+      state.groups.push(group);
     }),
   },
   {
