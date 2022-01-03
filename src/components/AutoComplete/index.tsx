@@ -1,9 +1,9 @@
-import { FunctionComponent } from "react";
+import { FunctionComponent, useState } from "react";
 import { ITextField, TextField } from "../TextField";
-import {IModal, ISelections, Modal} from "./Modal.AutoCompletel";
+import { IModal, ISelections, Modal } from "./Modal.AutoCompletel";
+import { shift, useFloating } from "@floating-ui/react-dom";
 
-interface IAutoComplete extends ITextField,IModal {
-}
+interface IAutoComplete extends ITextField, IModal {}
 
 export const AutoComplete: FunctionComponent<IAutoComplete> = ({
   label,
@@ -11,10 +11,25 @@ export const AutoComplete: FunctionComponent<IAutoComplete> = ({
   selections,
   ...textFieldProps
 }) => {
+  const { x, y, reference, floating, strategy, refs } = useFloating({
+    placement: "bottom-start",
+    middleware: [shift()],
+  });
+
+  const [showModal, setShowModal] = useState(() => false);
+
   return (
     <div>
       <TextField label={label} errors={errors} {...textFieldProps} />
-      <Modal selections={selections} />
+      <button
+        onClick={() => {
+          setShowModal((prevState) => !prevState);
+        }}
+      >
+        {" "}
+        toggle modal
+      </button>
+      {showModal && <Modal selections={selections} />}
     </div>
   );
 };
