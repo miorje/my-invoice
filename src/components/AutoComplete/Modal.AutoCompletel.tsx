@@ -5,11 +5,15 @@ export interface ISelections {
 
 export interface IModal {
   selections: ISelections[];
+  show: boolean;
 }
 
-export function Modal({ selections }: IModal) {
+export function Modal({ selections, show }: IModal) {
+  /*if(!show){
+    return null;
+  }*/
   return (
-    <div className="border-2">
+    <div className="py-2 mt-1 border-gray-50 bg-white rounded-lg shadow-md">
       {selections.map((item) => (
         <label key={item.value} className="flex items-center py-1 pl-3">
           <input

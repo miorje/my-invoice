@@ -16,20 +16,33 @@ export const AutoComplete: FunctionComponent<IAutoComplete> = ({
     middleware: [shift()],
   });
 
+  const handleShowModal = () => {
+    setShowModal(true);
+  };
+
   const [showModal, setShowModal] = useState(() => false);
 
   return (
-    <div>
-      <TextField label={label} errors={errors} {...textFieldProps} />
-      <button
-        onClick={() => {
-          setShowModal((prevState) => !prevState);
-        }}
-      >
-        {" "}
-        toggle modal
-      </button>
-      {showModal && <Modal selections={selections} />}
+    <div ref={reference} className="relative">
+      <TextField
+        label={label}
+        errors={errors}
+        {...textFieldProps}
+        onFocus={handleShowModal}
+      />
+      {showModal && (
+        <div
+            className="w-full"
+          ref={floating}
+          style={{
+            left: x ?? undefined,
+            top: y ?? undefined,
+            position: strategy,
+          }}
+        >
+          <Modal selections={selections} show={showModal} />
+        </div>
+      )}
     </div>
   );
 };
