@@ -1,8 +1,8 @@
 import { FunctionComponent } from "react";
 import { ITextField, TextField } from "../TextField";
+import {IModal, ISelections, Modal} from "./Modal.AutoCompletel";
 
-interface IAutoComplete extends ITextField {
-  selections: { label: string; value: number }[];
+interface IAutoComplete extends ITextField,IModal {
 }
 
 export const AutoComplete: FunctionComponent<IAutoComplete> = ({
@@ -14,18 +14,7 @@ export const AutoComplete: FunctionComponent<IAutoComplete> = ({
   return (
     <div>
       <TextField label={label} errors={errors} {...textFieldProps} />
-      <div className="border-2">
-        {selections.map((item) => (
-          <label key={item.value} className="flex items-center py-2 pl-3">
-            <input
-              type="checkbox"
-              className="w-4 h-4 align-middle mx-1 border-2"
-              value={item.value}
-            />
-            {item.label}
-          </label>
-        ))}
-      </div>
+      <Modal selections={selections} />
     </div>
   );
 };
