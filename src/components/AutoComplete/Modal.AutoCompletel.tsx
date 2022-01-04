@@ -1,6 +1,7 @@
-import { CSSProperties, LegacyRef, Ref } from "react";
+import { ChangeEvent, CSSProperties, LegacyRef, Ref, useMemo } from "react";
 
 export interface IModal<Generic> {
+  selections: Generic[];
   options: Generic[];
   show: boolean;
   modalStyle: CSSProperties;
@@ -8,6 +9,9 @@ export interface IModal<Generic> {
 
   getOptionLabel: (option: Generic) => string;
   getOptionValue: (option: Generic) => string;
+  handleOptionChange: (
+    selection: Generic
+  ) => (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const Modal = <Generic extends object>({
@@ -17,7 +21,13 @@ export const Modal = <Generic extends object>({
   modalRef,
   getOptionLabel,
   getOptionValue,
+  handleOptionChange,
+  selections,
 }: IModal<Generic>) => {
+  const selectionsValue = useMemo(
+    () => selections.map((selections) => getOptionValue(selections)),
+    [selections, getOptionValue]
+  );
   if (!show) {
     return null;
   }
@@ -28,11 +38,16 @@ export const Modal = <Generic extends object>({
       ref={modalRef}
     >
       {options.map((item) => (
-        <label key={getOptionValue(item)} className="flex items-center py-1 pl-3">
+        <label
+          key={getOptionValue(item)}
+          className="flex items-center py-1 pl-3"
+        >
           <input
             type="checkbox"
             className="w-4 h-4 align-middle mx-1 border-2"
             value={getOptionValue(item)}
+            onChange={handleOptionChange(item)}
+            checked={selectionsValue.includes(getOptionValue(item))}
           />
           {getOptionLabel(item)}
         </label>

@@ -1,4 +1,4 @@
-import { FunctionComponent, RefObject, useState } from "react";
+import { ChangeEvent, FunctionComponent, RefObject, useState } from "react";
 import { ITextField, TextField } from "../TextField";
 import { IModal, Modal } from "./Modal.AutoCompletel";
 import { shift, useFloating } from "@floating-ui/react-dom";
@@ -35,6 +35,24 @@ export const AutoComplete = <Generic extends object>({
 
   useClickAway(refs.reference as RefObject<HTMLElement>, handleCloseModal);
 
+  const [selections, setSelections] = useState<Generic[]>(() => []);
+
+  console.log(selections);
+
+  const handleOptionChange =
+    (selection: Generic) => (event: ChangeEvent<HTMLInputElement>) => {
+      if (event.target.checked) {
+        setSelections((prevState) => [selection, ...prevState]);
+      } else {
+        setSelections((prevState) =>
+          prevState.filter(
+            (prevSelection) =>
+              getOptionValue(prevSelection) !== getOptionValue(selection)
+          )
+        );
+      }
+    };
+
   return (
     <div ref={reference} className="relative">
       <TextField
@@ -54,6 +72,8 @@ export const AutoComplete = <Generic extends object>({
         }}
         getOptionLabel={getOptionLabel}
         getOptionValue={getOptionValue}
+        handleOptionChange={handleOptionChange}
+        selections={selections}
       />
     </div>
   );
