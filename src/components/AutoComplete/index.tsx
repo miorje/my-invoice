@@ -60,6 +60,11 @@ export const AutoComplete = <Generic extends object>({
         errors={errors}
         {...textFieldProps}
         onFocus={handleShowModal}
+        inputAdornment={selections.map((selection) => (
+          <span className="mr-1" key={getOptionValue(selection)}>
+            {getOptionLabel(selection)}
+          </span>
+        ))}
       />
       <Modal
         options={options}
