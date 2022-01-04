@@ -5,18 +5,18 @@ type THandler = () => void;
 export function useClickAway(ref: RefObject<HTMLElement>, handler: THandler) {
   useEffect(
     () => {
-      const listener = (event) => {
+      const handleClickAway = (event) => {
         // Do nothing if clicking ref's element or descendent elements
         if (!ref.current || ref.current.contains(event.target)) {
           return;
         }
         handler(event);
       };
-      document.addEventListener("mousedown", listener);
-      document.addEventListener("touchstart", listener);
+      document.addEventListener("mousedown", handleClickAway);
+      document.addEventListener("touchstart", handleClickAway);
       return () => {
-        document.removeEventListener("mousedown", listener);
-        document.removeEventListener("touchstart", listener);
+        document.removeEventListener("mousedown", handleClickAway);
+        document.removeEventListener("touchstart", handleClickAway);
       };
     },
     // Add ref and handler to effect dependencies

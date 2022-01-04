@@ -1,11 +1,12 @@
 import { useFormik } from "formik";
-import { ChangeEvent, FunctionComponent } from "react";
+import { ChangeEvent, FunctionComponent, useMemo } from "react";
 import { useStoreActions } from "../../store/hooks";
 import { schema } from "./groupSchema";
 import { useRouter } from "next/router";
 import { IExpenseValue } from "../../store/model/expense";
 import { AutoComplete } from "../../components/AutoComplete";
 import { TextField } from "../../components/TextField";
+import { IUser } from "../../store/model/user";
 
 interface ItextField {
   label: string;
@@ -15,6 +16,13 @@ interface ItextField {
 export const ExpenseForm: FunctionComponent = () => {
   const router = useRouter();
   const setExpenses = useStoreActions((actions) => actions.expense.setExpenses);
+  const getGroup = useStoreActions((actions) => actions.group.getGroup);
+
+  const users = useMemo(
+    () => getGroup(router.query.id as string).users,
+    [getGroup, router.query.id]
+  );
+
   const formik = useFormik<Omit<IExpenseValue, "id">>({
     initialValues: {
       name: "",
@@ -67,7 +75,9 @@ export const ExpenseForm: FunctionComponent = () => {
           label="Participant"
           id="users"
           placeholder="participants"
-          selections={[{value:1,label:'satu'},{value:2,label:'dua'}]}
+          options={users as IUser[]}
+          getOptionLabel={(user) => user.name}
+          getOptionValue={(user) => user.id}
         />
       </section>
       <button

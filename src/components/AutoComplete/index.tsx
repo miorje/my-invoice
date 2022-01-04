@@ -1,17 +1,23 @@
-import { FunctionComponent, useState } from "react";
+import { FunctionComponent, RefObject, useState } from "react";
 import { ITextField, TextField } from "../TextField";
-import { IModal, ISelections, Modal } from "./Modal.AutoCompletel";
+import { IModal, Modal } from "./Modal.AutoCompletel";
 import { shift, useFloating } from "@floating-ui/react-dom";
-import {useClickAway} from "../../utility/useClickAway";
+import { useClickAway } from "../../utility/useClickAway";
 
-interface IAutoComplete extends ITextField, IModal {}
+interface IAutoComplete<Generic>
+  extends ITextField,
+    Pick<IModal<Generic>, "getOptionLabel" | "getOptionValue"> {
+  options: Generic[];
+}
 
-export const AutoComplete: FunctionComponent<IAutoComplete> = ({
+export const AutoComplete = <Generic extends object>({
   label,
   errors,
-  selections,
+  options,
+  getOptionLabel,
+  getOptionValue,
   ...textFieldProps
-}) => {
+}: IAutoComplete<Generic>) => {
   const { x, y, reference, floating, strategy, refs } = useFloating({
     placement: "bottom-start",
     middleware: [shift()],
@@ -24,10 +30,10 @@ export const AutoComplete: FunctionComponent<IAutoComplete> = ({
   const [showModal, setShowModal] = useState(() => false);
 
   const handleCloseModal = () => {
-      setShowModal(false)
-  }
+    setShowModal(false);
+  };
 
-  useClickAway(refs.reference, handleCloseModal);
+  useClickAway(refs.reference as RefObject<HTMLElement>, handleCloseModal);
 
   return (
     <div ref={reference} className="relative">
@@ -38,7 +44,7 @@ export const AutoComplete: FunctionComponent<IAutoComplete> = ({
         onFocus={handleShowModal}
       />
       <Modal
-        selections={selections}
+        options={options}
         show={showModal}
         modalRef={floating}
         modalStyle={{
@@ -46,6 +52,8 @@ export const AutoComplete: FunctionComponent<IAutoComplete> = ({
           top: y ?? undefined,
           position: strategy,
         }}
+        getOptionLabel={getOptionLabel}
+        getOptionValue={getOptionValue}
       />
     </div>
   );

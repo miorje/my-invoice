@@ -1,18 +1,23 @@
 import { CSSProperties, LegacyRef, Ref } from "react";
 
-export interface ISelections {
-  label: string;
-  value: number;
-}
-
-export interface IModal {
-  selections: ISelections[];
+export interface IModal<Generic> {
+  options: Generic[];
   show: boolean;
   modalStyle: CSSProperties;
   modalRef: Ref<HTMLDivElement>;
+
+  getOptionLabel: (option: Generic) => string;
+  getOptionValue: (option: Generic) => string;
 }
 
-export function Modal({ selections, show, modalStyle, modalRef }: IModal) {
+export const Modal = <Generic extends object>({
+  options,
+  show,
+  modalStyle,
+  modalRef,
+  getOptionLabel,
+  getOptionValue,
+}: IModal<Generic>) => {
   if (!show) {
     return null;
   }
@@ -22,16 +27,16 @@ export function Modal({ selections, show, modalStyle, modalRef }: IModal) {
       style={modalStyle}
       ref={modalRef}
     >
-      {selections.map((item) => (
-        <label key={item.value} className="flex items-center py-1 pl-3">
+      {options.map((item) => (
+        <label key={getOptionValue(item)} className="flex items-center py-1 pl-3">
           <input
             type="checkbox"
             className="w-4 h-4 align-middle mx-1 border-2"
-            value={item.value}
+            value={getOptionValue(item)}
           />
-          {item.label}
+          {getOptionLabel(item)}
         </label>
       ))}
     </div>
   );
-}
+};
