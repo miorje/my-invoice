@@ -3,18 +3,20 @@ import { ITextField, TextField } from "../TextField";
 import { IModal, Modal } from "./Modal.AutoCompletel";
 import { shift, useFloating } from "@floating-ui/react-dom";
 import { useClickAway } from "../../utility/useClickAway";
-import {Chip} from "../Chip";
+import { Chip } from "../Chip";
 
 interface IAutoComplete<Generic>
   extends ITextField,
     Pick<IModal<Generic>, "getOptionLabel" | "getOptionValue"> {
   options: Generic[];
+  onChange: (event: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const AutoComplete = <Generic extends object>({
   label,
   errors,
   options,
+  onChange,
   getOptionLabel,
   getOptionValue,
   ...textFieldProps
@@ -52,6 +54,8 @@ export const AutoComplete = <Generic extends object>({
           )
         );
       }
+
+      onChange(event);
     };
 
   return (
@@ -62,7 +66,11 @@ export const AutoComplete = <Generic extends object>({
         {...textFieldProps}
         onFocus={handleShowModal}
         inputAdornment={selections.map((selection) => (
-          <Chip handleDelete={handleOptionChange(selection)} key={getOptionValue(selection)} value={getOptionValue(selection)}>
+          <Chip
+            handleDelete={handleOptionChange(selection)}
+            key={getOptionValue(selection)}
+            value={getOptionValue(selection)}
+          >
             {getOptionLabel(selection)}
           </Chip>
         ))}

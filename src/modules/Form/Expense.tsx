@@ -1,5 +1,5 @@
 import { useFormik } from "formik";
-import { ChangeEvent, FunctionComponent, useMemo } from "react";
+import {ChangeEvent, FunctionComponent, useEffect, useMemo} from "react";
 import { useStoreActions } from "../../store/hooks";
 import { schema } from "./groupSchema";
 import { useRouter } from "next/router";
@@ -38,18 +38,11 @@ export const ExpenseForm: FunctionComponent = () => {
     },
   });
 
+  useEffect(()=>{
+    console.log(formik.values.users)
+  },[formik.values.users])
+
   const handleUser = (event: ChangeEvent<HTMLInputElement>) => {
-    // if (event.target.checked) {
-    //   formik.setFieldValue("users", [
-    //     ...formik.values.users,
-    //     event.target.value,
-    //   ]);
-    // } else {
-    //   formik.setFieldValue(
-    //     "users",
-    //     formik.values.users.filter((userId) => userId === event.target.value)
-    //   );
-    // }
 
     formik.setFieldValue(
       "users",
@@ -72,6 +65,7 @@ export const ExpenseForm: FunctionComponent = () => {
       />
       <section className="mb-4">
         <AutoComplete
+            onChange={handleUser}
           label="Participant"
           id="users"
           placeholder="participants"
