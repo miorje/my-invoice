@@ -1,9 +1,9 @@
 import { useFormik } from "formik";
-import {ChangeEvent, FunctionComponent, useEffect, useMemo} from "react";
+import { ChangeEvent, FunctionComponent, useEffect, useMemo } from "react";
 import { useStoreActions } from "../../store/hooks";
-import { schema } from "./groupSchema";
+import { schema } from "./expenseSchema";
 import { useRouter } from "next/router";
-import { IExpenseValue } from "../../store/model/expense";
+import { IExpenseValue, ISetExpenses } from "../../store/model/expense";
 import { AutoComplete } from "../../components/AutoComplete";
 import { TextField } from "../../components/TextField";
 import { IUser } from "../../store/model/user";
@@ -23,27 +23,29 @@ export const ExpenseForm: FunctionComponent = () => {
     [getGroup, router.query.id]
   );
 
-  const formik = useFormik<Omit<IExpenseValue, "id">>({
+  const formik = useFormik<ISetExpenses>({
     initialValues: {
       name: "",
       users: [],
       groupId: router.query.id as string,
-      total: 0,
+      //@ts-ignore
+      total: "",
     },
     validationSchema: schema,
     onSubmit: (values) => {
       setExpenses(values);
       //@ts-ignore
-      router.replace(`/group/${router.query.id}`, { shallow: true });
+      router.replace(`/group/${router.query.id}`, undefined, {
+        shallow: true,
+      });
     },
   });
 
-  useEffect(()=>{
-    console.log(formik.values.users)
-  },[formik.values.users])
+  useEffect(() => {
+    console.log(formik.values.users);
+  }, [formik.values.users]);
 
   const handleUser = (event: ChangeEvent<HTMLInputElement>) => {
-
     formik.setFieldValue(
       "users",
       event.target.checked
@@ -63,9 +65,17 @@ export const ExpenseForm: FunctionComponent = () => {
         value={formik.values.name}
         onChange={formik.handleChange}
       />
+      <TextField
+        label="Total"
+        errors={formik.errors.total}
+        id="total"
+        type="number"
+        value={formik.values.total}
+        onChange={formik.handleChange}
+      />
       <section className="mb-4">
         <AutoComplete
-            onChange={handleUser}
+          onChange={handleUser}
           label="Participant"
           id="users"
           placeholder="participants"
@@ -78,7 +88,7 @@ export const ExpenseForm: FunctionComponent = () => {
         type="submit"
         className="bg-yellow-400 text-yellow-900 py-2 px-4 rounded-lg shadow-md"
       >
-        Create Group
+        Create Expense
       </button>
     </form>
   );
