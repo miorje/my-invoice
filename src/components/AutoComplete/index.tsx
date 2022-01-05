@@ -62,7 +62,7 @@ export const AutoComplete = <Generic extends object>({
         {...textFieldProps}
         onFocus={handleShowModal}
         inputAdornment={selections.map((selection) => (
-          <Chip className="mr-1" key={getOptionValue(selection)}>
+          <Chip handleDelete={handleOptionChange(selection)} key={getOptionValue(selection)} value={getOptionValue(selection)}>
             {getOptionLabel(selection)}
           </Chip>
         ))}

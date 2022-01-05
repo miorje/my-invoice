@@ -1,6 +1,11 @@
 import { FC, FunctionComponent } from "react";
 
-export const Chip: FunctionComponent = (props) => {
+interface IChip{
+    handleDelete?: (event: ChangeEvent<HTMLInputElement>) => void;
+    value:string;
+}
+
+export const Chip: FunctionComponent<IChip> = (props) => {
   return (
     <div className="border-2 mx-0.5 flex items-center border-gray-300 rounded-sl">
       <label className="px-2 text-gray-700 select-none">{props.children}</label>
@@ -8,7 +13,13 @@ export const Chip: FunctionComponent = (props) => {
         type="button"
         className="mr-1 block relative text-center hover:bg-gray-400 bg-gray-300 text-xs rounded-full w-4 h-4"
       >
-        <input type="checkbox" checked={true} />
+        <input
+          type="checkbox"
+          checked={true}
+          className="absolute top-0 left-0 w-4 h-4 opacity-0"
+          onChange={props.handleDelete}
+          value={props.value}
+        />
         <svg
           xmlns="http://www.w3.org/2000/svg"
           className="h-3 w-3 m-auto text-white "
