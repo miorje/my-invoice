@@ -40,7 +40,7 @@ export const AutoComplete = <Generic extends object>({
 
   const [selections, setSelections] = useState<Generic[]>(() => []);
 
-  console.log(selections);
+
 
   const handleOptionChange =
     (selection: Generic) => (event: ChangeEvent<HTMLInputElement>) => {

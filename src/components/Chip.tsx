@@ -1,13 +1,13 @@
-import { FC, FunctionComponent } from "react";
+import { ChangeEvent, FunctionComponent } from "react";
 
-interface IChip{
-    handleDelete?: (event: ChangeEvent<HTMLInputElement>) => void;
-    value:string;
+interface IChip {
+  handleDelete?: (event: ChangeEvent<HTMLInputElement>) => void;
+  value: string;
 }
 
 export const Chip: FunctionComponent<IChip> = (props) => {
   return (
-    <div className="border-2 mx-0.5 flex items-center border-gray-300 rounded-sl">
+    <div className="border-2 mx-0.5 flex items-center border-gray-300 rounded-xl">
       <label className="px-2 text-gray-700 select-none">{props.children}</label>
       <button
         type="button"

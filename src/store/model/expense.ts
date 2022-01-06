@@ -42,9 +42,10 @@ export const expenseModel: IExpenseModel = persist(
   {
     expenses: {},
     setExpenses: action((state, { groupId, ...expense }) => {
+      // console.log({ groupId, ...expense });
       expense["id"] = `expense-${new Date().getTime()}`;
-
-      // initialize new expenses group
+      //
+      // // initialize new expenses group
       if (!state.expenses[groupId]) {
         state.expenses[groupId] = [];
       }

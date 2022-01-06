@@ -1,21 +1,17 @@
 import { useFormik } from "formik";
-import { ChangeEvent, FunctionComponent, useEffect, useMemo } from "react";
+import { ChangeEvent, FunctionComponent, useMemo } from "react";
 import { useStoreActions } from "../../store/hooks";
 import { schema } from "./expenseSchema";
 import { useRouter } from "next/router";
-import { IExpenseValue, ISetExpenses } from "../../store/model/expense";
+import { ISetExpenses } from "../../store/model/expense";
 import { AutoComplete } from "../../components/AutoComplete";
-import { TextField } from "../../components/TextField";
 import { IUser } from "../../store/model/user";
-
-interface ItextField {
-  label: string;
-  error?: string;
-}
+import { TextField } from "../../components/TextField";
 
 export const ExpenseForm: FunctionComponent = () => {
-  const router = useRouter();
   const setExpenses = useStoreActions((actions) => actions.expense.setExpenses);
+  const router = useRouter();
+
   const getGroup = useStoreActions((actions) => actions.group.getGroup);
 
   const users = useMemo(
@@ -28,22 +24,24 @@ export const ExpenseForm: FunctionComponent = () => {
       name: "",
       users: [],
       groupId: router.query.id as string,
+
       //@ts-ignore
       total: "",
     },
+    enableReinitialize:true,
     validationSchema: schema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       setExpenses(values);
-      //@ts-ignore
-      router.replace(`/group/${router.query.id}`, undefined, {
-        shallow: true,
-      });
+
+      await router.replace(
+        `/group/${router.query.id}?created=today`,
+        `/group/${router.query.id}`,
+        {
+          shallow: true,
+        }
+      );
     },
   });
-
-  useEffect(() => {
-    console.log(formik.values.users);
-  }, [formik.values.users]);
 
   const handleUser = (event: ChangeEvent<HTMLInputElement>) => {
     formik.setFieldValue(
@@ -70,23 +68,24 @@ export const ExpenseForm: FunctionComponent = () => {
         errors={formik.errors.total}
         id="total"
         type="number"
+        placeholder="Total"
         value={formik.values.total}
         onChange={formik.handleChange}
       />
-      <section className="mb-4">
+      <section aria-details="user selection section" className="mb-4">
         <AutoComplete
           onChange={handleUser}
           label="Participant"
           id="users"
           placeholder="participants"
           options={users as IUser[]}
-          getOptionLabel={(user) => user.name}
-          getOptionValue={(user) => user.id}
+          getOptionValue={(option) => option.id}
+          getOptionLabel={(option) => option.name}
         />
       </section>
       <button
         type="submit"
-        className="bg-yellow-400 text-yellow-900 py-2 px-4 rounded-lg shadow-md"
+        className="bg-indigo-400 text-indigo-900 py-2 px-4 rounded-lg shadow-md"
       >
         Create Expense
       </button>
