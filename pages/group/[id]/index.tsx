@@ -3,6 +3,7 @@ import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 import confetti from "canvas-confetti";
 import { useStoreActions } from "../../../src/store/hooks";
+import { ExpenseCard } from "../../../src/components/ExpenseCard";
 
 const GroupId = () => {
   const router = useRouter();
@@ -12,6 +13,8 @@ const GroupId = () => {
     () => getGroup(router.query.id as string),
     [getGroup, router.query.id]
   );
+
+  console.log(group);
 
   useEffect(() => {
     if (router.query.created === "today") {
@@ -52,6 +55,11 @@ const GroupId = () => {
             </svg>
           </button>
         </div>
+      </section>
+      <section className="grid gap-4">
+        {group.expenses.map((item) => (
+          <ExpenseCard {...item} key={item.id}/>
+        ))}
       </section>
     </Container>
   );
