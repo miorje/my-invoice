@@ -1,12 +1,10 @@
 import { FunctionComponent, useMemo } from "react";
-import { IGetExpensesByGroup } from "../../store/model/expense";
+import { IExpenseValue } from "../../store/model/expense";
 import dayjs from "dayjs";
-import exp from "constants";
 import { useStoreActions } from "../../store/hooks";
+import { IUserCard, UserCard } from "./UserCard";
 
-export const ExpenseCard: FunctionComponent<IGetExpensesByGroup> = (
-  expense
-) => {
+export const ExpenseCard: FunctionComponent<IExpenseValue> = (expense) => {
   const total = useMemo(
     () =>
       new Intl.NumberFormat("ms-MY", {
@@ -16,23 +14,18 @@ export const ExpenseCard: FunctionComponent<IGetExpensesByGroup> = (
     [expense.total]
   );
 
-  const eachTotal = useMemo(
-    () => expense.total / expense.users.length,
-    [expense.total]
-  );
-
   const getUser = useStoreActions((actions) => actions.user.getUser);
 
-  const users = useMemo(
+  const users = useMemo<IUserCard[]>(
     () =>
       expense.users.map((userID) => ({
         ...getUser(userID),
-        total: new Intl.NumberFormat("ms-MY", {
-          style: "currency",
-          currency: "MYR",
-        }).format(expense.total / expense.users.length),
+        expenseId: expense.id as string,
+        groupId: expense.groupId,
+
+        total: expense.total / expense.users.length,
       })),
-    [expense.users]
+    [expense.users, expense.total, getUser]
   );
 
   const date = useMemo(
@@ -53,15 +46,11 @@ export const ExpenseCard: FunctionComponent<IGetExpensesByGroup> = (
       </section>
       <section className="col col-start-2 col-end-11">
         <div className="flex w-full justify-between text-xl font-extrabold text-gray-800">
-          <div>{expense.name}</div>
-          <div>{total}</div>
+          <div>{expense.name}</div> <div>{total}</div>
         </div>
         <div className="flex w-full flex-col">
           {users.map((user) => (
-            <div key={user.id + user.name} className="flex w-full justify-between">
-              <div>{user.name}</div>
-              <div>{user.total}</div>
-            </div>
+            <UserCard {...user} key={user.id} />
           ))}
         </div>
       </section>
