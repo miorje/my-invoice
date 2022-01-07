@@ -1,7 +1,7 @@
 import { Action, action, persist, thunk, Thunk } from "easy-peasy";
 import { IStoreModel } from "../index";
 import { IUser } from "./user";
-import { IGetExpenseByGroup } from "./expense";
+import { IGetExpensesByGroup } from "./expense";
 
 export interface IGroup {
   id?: string; // autogenerate
@@ -12,7 +12,7 @@ export interface IGroup {
 
 export interface IGetGroup extends Omit<IGroup, "users"> {
   users: (IUser | undefined)[];
-  expenses: IGetExpenseByGroup[];
+  expenses: IGetExpensesByGroup[];
 }
 
 export interface IGroupModel {
@@ -46,7 +46,9 @@ export const groupModel: IGroupModel = persist(
         helpers.getStoreActions().user.getUser(userId)
       );
 
-      const expenses = helpers.getStoreActions().expense.getExpenseByGroup(groupId);
+      const expenses = helpers
+        .getStoreActions()
+        .expense.getExpenseByGroup(groupId);
 
       return {
         ...group,

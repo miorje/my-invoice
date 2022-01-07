@@ -1,11 +1,19 @@
 import { Action, action, persist, Thunk, thunk } from "easy-peasy";
 import { IStoreModel } from "../index";
+import { act } from "react-dom/test-utils";
 
-interface IPaymentLogs {
-  user: string;
-  amount: number;
+interface ISetPayment {
+  //logs
+  total: number;
   created: string; // ISO string date
+  id: string;
+
+  //reference
+  userId: string;
+  groupId: string;
+  expenseId: string;
 }
+interface IPayment extends Omit<ISetPayment, "groupId" | "expenseId"> {}
 
 export interface IExpenseValue {
   id?: string;
@@ -14,7 +22,7 @@ export interface IExpenseValue {
   total: number;
   groupId: string;
   created: string; // ISO string date
-  payment: IPaymentLogs[];
+  payment: IPayment[];
 }
 
 export interface IGetExpensesByGroup extends Omit<IExpenseValue, "groupId"> {}
@@ -36,11 +44,43 @@ export interface IExpenseModel {
     IStoreModel,
     IGetExpensesByGroup[]
   >;
+  setPayment: Thunk<
+    IExpenseModel, // data structure
+    Pick<ISetPayment, "expenseId" | "groupId" | "total" | "userId">, // apa yg diterima
+    undefined,
+    IStoreModel,
+    IPayment[]
+  >;
+  setPaymentWithGroupIdByExpenseId: Action<IExpenseModel, ISetPayment>;
 }
 
 export const expenseModel: IExpenseModel = persist(
   {
     expenses: {},
+    setPayment: thunk((actions, { ...payload }, helpers) => {
+      const { setPaymentWithGroupIdByExpenseId } = actions;
+
+      setPaymentWithGroupIdByExpenseId({
+        id: `payment-${new Date().getTime()}`,
+        created: new Date().toISOString(),
+        ...payload,
+      });
+
+      return (
+        helpers
+          .getState()
+          .expenses[payload.groupId]?.find(
+            (expense) => expense.id === payload.expenseId
+          )?.payment ?? []
+      );
+    }),
+    setPaymentWithGroupIdByExpenseId: action(
+      (state, { groupId, expenseId, ...payment }) => {
+        state.expenses[groupId]
+          .find((expense) => expense.id === expenseId)
+          ?.payment.push(payment);
+      }
+    ),
     setExpenses: action((state, { groupId, ...expense }) => {
       // console.log({ groupId, ...expense });
       expense["id"] = `expense-${new Date().getTime()}`;
