@@ -76,7 +76,7 @@ export const UserCard = (user: IUserCard) => {
           {userById.name}
         </label>
       </div>
-      <div>{totalInCurrency}</div>
+      <div className="text-red-500">{totalInCurrency}</div>
     </div>
   );
 };

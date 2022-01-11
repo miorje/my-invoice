@@ -2,16 +2,22 @@ import { FunctionComponent, useMemo } from "react";
 import { IExpenseValue } from "../../store/model/expense";
 import dayjs from "dayjs";
 import { UserCard } from "./UserCard";
+import { useConvertToCurrency } from "../../utility/useConvertToCurrency";
 
 export const ExpenseCard: FunctionComponent<IExpenseValue> = (expense) => {
-  const total = useMemo(
-    () =>
-      new Intl.NumberFormat("ms-MY", {
-        style: "currency",
-        currency: "MYR",
-      }).format(expense.total),
-    [expense.total]
-  );
+  const total = useConvertToCurrency(expense.total);
+  const totalPaid = useMemo(() => {
+    return expense.payment.reduce(
+      (totalPayment, pay) => pay.total + totalPayment,
+      0
+    );
+  }, [expense.payment]);
+
+  const totalPaidToCurrency = useConvertToCurrency(totalPaid);
+
+  const isSettle = useMemo(() => {
+    return totalPaid >= expense.total;
+  }, [totalPaid, expense.total]);
 
   const totalPerParticipant = useMemo(
     () => expense.total / expense.users.length,
@@ -24,10 +30,13 @@ export const ExpenseCard: FunctionComponent<IExpenseValue> = (expense) => {
     }),
     [expense.created]
   );
+
   return (
     <div
       key={expense.id}
-      className="grid grid-cols-12 gap-4 border-gray-700 rounded-lg shadow-md py-6 px-4"
+      className={`grid grid-cols-12 gap-4 border-gray-700 rounded-lg shadow-md py-6 px-4 ${
+        isSettle ? "opacity-50" : ""
+      }`}
     >
       <section className="col col-span-1">
         <h2 className="text-xl font-extrabold text-red-500">{date.month}</h2>
@@ -35,7 +44,15 @@ export const ExpenseCard: FunctionComponent<IExpenseValue> = (expense) => {
       </section>
       <section className="col col-start-2 col-end-11">
         <div className="flex w-full justify-between text-xl font-extrabold text-gray-800">
-          <div>{expense.name}</div> <div>{total}</div>
+          <div>{expense.name}</div>
+          <div className="flex flex-col">
+            <div className="flex">{total}</div>
+            {totalPaid > 0 && (
+              <div className="flex text-sm w-full font-bold text-green-500 justify-end">
+                + {totalPaidToCurrency}
+              </div>
+            )}
+          </div>
         </div>
         <div className="flex w-full flex-col">
           {expense.users.map((id) => (
