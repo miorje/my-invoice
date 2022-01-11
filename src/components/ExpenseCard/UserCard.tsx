@@ -2,13 +2,14 @@ import { IUser } from "../../store/model/user";
 import { useMemo } from "react";
 import { useStoreActions, useStoreState } from "../../store/hooks";
 import { IPayment } from "../../store/model/expense";
+import {useConvertToCurrency} from "../../utility/useConvertToCurrency";
 
-export interface IUserCard{
+export interface IUserCard {
   total: number;
   groupId: string;
   expenseId: string;
   payment: IPayment[];
-  id: string
+  id: string;
 }
 
 export const UserCard = (user: IUserCard) => {
@@ -23,11 +24,10 @@ export const UserCard = (user: IUserCard) => {
           totalPaymentByUser + userPayment.total,
         0
       );
-    return new Intl.NumberFormat("ms-MY", {
-      style: "currency",
-      currency: "MYR",
-    }).format(user.total - totalPaidbByUser);
+    return (user.total - totalPaidbByUser);
   }, [user.payment, user.total, user.id]);
+
+  const totalInCurrency = useConvertToCurrency(total)
 
   const handleQuickPayment = () => {
     setPayment({
@@ -37,6 +37,10 @@ export const UserCard = (user: IUserCard) => {
       userId: user.id,
     });
   };
+
+  if (!total){
+    return null;
+  }
 
   return (
     <div key={user.id} className="flex w-full justify-between">
@@ -68,9 +72,11 @@ export const UserCard = (user: IUserCard) => {
             />
           </svg>
         </button>
-        <label className=" pl-2 text-gray-700 select-none">{userById.name}</label>
+        <label className=" pl-2 text-gray-700 select-none">
+          {userById.name}
+        </label>
       </div>
-      <div>{total}</div>
+      <div>{totalInCurrency}</div>
     </div>
   );
 };
