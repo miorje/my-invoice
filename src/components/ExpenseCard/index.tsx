@@ -1,8 +1,7 @@
 import { FunctionComponent, useMemo } from "react";
 import { IExpenseValue } from "../../store/model/expense";
 import dayjs from "dayjs";
-import { useStoreActions } from "../../store/hooks";
-import { IUserCard, UserCard } from "./UserCard";
+import { UserCard } from "./UserCard";
 
 export const ExpenseCard: FunctionComponent<IExpenseValue> = (expense) => {
   const total = useMemo(
@@ -14,20 +13,10 @@ export const ExpenseCard: FunctionComponent<IExpenseValue> = (expense) => {
     [expense.total]
   );
 
-  const getUser = useStoreActions((actions) => actions.user.getUser);
-
-  const users = useMemo<IUserCard[]>(
-    () =>
-      expense.users.map((userID) => ({
-        ...getUser(userID),
-        expenseId: expense.id as string,
-        groupId: expense.groupId,
-
-        total: expense.total / expense.users.length,
-      })),
-    [expense.users, expense.total, getUser]
+  const totalPerParticipant = useMemo(
+    () => expense.total / expense.users.length,
+    [expense.users, expense.total]
   );
-
   const date = useMemo(
     () => ({
       month: dayjs(expense.created).format("MMM"),
@@ -49,8 +38,15 @@ export const ExpenseCard: FunctionComponent<IExpenseValue> = (expense) => {
           <div>{expense.name}</div> <div>{total}</div>
         </div>
         <div className="flex w-full flex-col">
-          {users.map((user) => (
-            <UserCard {...user} key={user.id} />
+          {expense.users.map((id) => (
+            <UserCard
+              id={id}
+              key={id}
+              expenseId={expense.id as string}
+              groupId={expense.groupId}
+              total={totalPerParticipant}
+              payment={expense.payment}
+            />
           ))}
         </div>
       </section>

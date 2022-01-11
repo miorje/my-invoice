@@ -1,6 +1,13 @@
-import { Action, action, persist, Thunk, thunk } from "easy-peasy";
+import {
+  Action,
+  action,
+  computed,
+  Computed,
+  persist,
+  Thunk,
+  thunk,
+} from "easy-peasy";
 import { IStoreModel } from "../index";
-import { act } from "react-dom/test-utils";
 
 interface ISetPayment {
   //logs
@@ -13,7 +20,8 @@ interface ISetPayment {
   groupId: string;
   expenseId: string;
 }
-interface IPayment extends Omit<ISetPayment, "groupId" | "expenseId"> {}
+
+export interface IPayment extends Omit<ISetPayment, "groupId" | "expenseId"> {}
 
 export interface IExpenseValue {
   id?: string;
@@ -52,11 +60,18 @@ export interface IExpenseModel {
     IPayment[]
   >;
   setPaymentWithGroupIdByExpenseId: Action<IExpenseModel, ISetPayment>;
+  expenseByGroupId: Computed<
+    IExpenseModel,
+    (groupId: string) => IGetExpensesByGroup[]
+  >;
 }
 
 export const expenseModel: IExpenseModel = persist(
   {
     expenses: {},
+    expenseByGroupId: computed(
+      (state) => (groupId) => state.expenses?.[groupId] ?? []
+    ),
     setPayment: thunk((actions, { ...payload }, helpers) => {
       const { setPaymentWithGroupIdByExpenseId } = actions;
 

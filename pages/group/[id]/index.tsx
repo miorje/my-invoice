@@ -2,19 +2,30 @@ import { Container } from "../../../src/components/Container";
 import { useRouter } from "next/router";
 import { useEffect, useMemo } from "react";
 import confetti from "canvas-confetti";
-import { useStoreActions } from "../../../src/store/hooks";
+import { useStoreState, useStoreActions } from "../../../src/store/hooks";
 import { ExpenseCard } from "../../../src/components/ExpenseCard";
+import { route } from "next/dist/server/router";
 
 const GroupId = () => {
   const router = useRouter();
   const getGroup = useStoreActions((actions) => actions.group.getGroup);
+  const expenses = useStoreState((state) => state.expense.expenses);
 
-  const group = useMemo(
-    () => getGroup(router.query.id as string),
-    [getGroup, router.query.id]
+  const groupById = useStoreState((state) =>
+    state.group.groupById(router.query.id as string)
   );
 
-  console.log(group);
+  const expenseByGroupId = useStoreState((state) =>
+    state.expense.expenseByGroupId(router.query.id as string)
+  );
+  // console.log(groupById);
+
+  // const group = useMemo(
+  //   () => getGroup(router.query.id as string),
+  //   [getGroup, router.query.id, expenses]
+  // );
+
+  // console.log(expenses);
 
   useEffect(() => {
     if (router.query.created === "today") {
@@ -32,7 +43,7 @@ const GroupId = () => {
     <Container>
       <section className="mt-20 mb-8 items-center justify-between flex">
         <h1 className="text-2xl font-extrabold text-gray-800 md:max-w-4xl sm:text-3xl">
-          {group.name}
+          {groupById.name}
         </h1>
         <div>
           <button
@@ -57,8 +68,12 @@ const GroupId = () => {
         </div>
       </section>
       <section className="grid gap-4">
-        {group.expenses.map((item) => (
-          <ExpenseCard {...item} groupId={router.query.id} key={item.id} />
+        {expenseByGroupId.map((item) => (
+          <ExpenseCard
+            {...item}
+            groupId={router.query.id as string}
+            key={item.id}
+          />
         ))}
       </section>
     </Container>
