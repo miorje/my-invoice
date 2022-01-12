@@ -1,5 +1,12 @@
 import { useStoreState } from "../../store/hooks";
-import {Summary} from "./Summary";
+import dynamic from "next/dynamic";
+import { IGroup } from "../../store/model/group";
+import { SummaryLoading } from "./Summary.Loading";
+
+const Summary = dynamic<IGroup>(
+  () => import("./Summary").then((component) => component.Summary),
+  { loading: SummaryLoading }
+);
 
 export const GroupCard = () => {
   const group = useStoreState((state) => state.group.groups);
