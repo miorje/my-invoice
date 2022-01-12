@@ -2,6 +2,7 @@ import { Container } from "../src/components/Container";
 import { useRouter } from "next/router";
 import { GroupCard } from "../src/components/GroupCard";
 import { Title } from "../src/components/Title";
+import { motion } from "framer-motion";
 
 const LandingPage = () => {
   const router = useRouter();
