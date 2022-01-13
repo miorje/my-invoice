@@ -1,7 +1,7 @@
 import { Avatar } from "./Avatar";
 import { motion } from "framer-motion";
 
-interface IUserAvatarGroup {
+export interface IUserAvatarGroup {
   users: string[];
 }
 
