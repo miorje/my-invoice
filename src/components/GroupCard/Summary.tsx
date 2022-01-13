@@ -4,6 +4,7 @@ import { useRouter } from "next/router";
 import { useStoreState } from "../../store/hooks";
 import { useMemo } from "react";
 import { TotalSummary } from "./TotalSummary";
+import { motion } from "framer-motion";
 
 export const Summary = (group: IGroup) => {
   const router = useRouter();
@@ -36,9 +37,11 @@ export const Summary = (group: IGroup) => {
 
   console.log(totalPaid);
   return (
-    <div
+    <motion.div
       onClick={handleToGroup}
       className="shadow-md border-t-2 border-gray-100 rounded-lg rounded-tr-2xl rounded-bl-2xl pt-3 pb-5 px-1 cursor-pointer"
+      whileHover={{ scale: 1.05 }}
+      whileTap={{scale:0.95}}
     >
       <section
         className="text-center flex justify-center flex-col"
@@ -55,6 +58,6 @@ export const Summary = (group: IGroup) => {
         <TotalSummary header={"Paid"} total={totalPaid} />
         <TotalSummary header={"Total"} total={totalExpenses} />
       </div>
-    </div>
+    </motion.div>
   );
 };

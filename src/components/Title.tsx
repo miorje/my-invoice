@@ -4,8 +4,8 @@ import { motion } from "framer-motion";
 export const Title: FunctionComponent = ({ children }) => {
   return (
     <motion.h1
-      initial={{ opacity: 0.2, marginLeft: "-1.5rem" }}
-      animate={{ opacity: 1, marginLeft: 0 }}
+      initial={{ opacity: 0.2, y: 8 }}
+      animate={{ opacity: 1, y: 0 }}
       transition={{
         type: "spring",
         stiffness: 80,
