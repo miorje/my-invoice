@@ -1,4 +1,4 @@
-import { ChangeEvent, FunctionComponent, RefObject, useState } from "react";
+import { ChangeEvent, RefObject, useState } from "react";
 import { ITextField, TextField } from "../TextField";
 import { IModal, Modal } from "./Modal.AutoCompletel";
 import { shift, useFloating } from "@floating-ui/react-dom";
@@ -36,11 +36,11 @@ export const AutoComplete = <Generic extends object>({
     setShowModal(false);
   };
 
-  useClickAway(refs.reference as RefObject<HTMLElement>, handleCloseModal);
+  useClickAway(() => {
+    handleCloseModal();
+  }, [refs.reference as RefObject<HTMLElement>]);
 
   const [selections, setSelections] = useState<Generic[]>(() => []);
-
-
 
   const handleOptionChange =
     (selection: Generic) => (event: ChangeEvent<HTMLInputElement>) => {
