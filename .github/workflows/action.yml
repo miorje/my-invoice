@@ -24,5 +24,10 @@ jobs:
           directory: '.'
           filename: 'release.zip'
           exclusions: '*.git* /*node_modules/* .editorconfig'
+      - name: Upload to git
+        uses: actions/upload-artifact@v1
+        with:
+          name: my-artifact
+          path: ${{ github.workspace }}/release.zip
 
 
