@@ -2,13 +2,18 @@ import { useFormik } from "formik";
 import { ChangeEvent, FunctionComponent } from "react";
 import { UserSelection } from "./UserSelection";
 import { IGroup } from "../../store/model/group";
-import { useStoreActions } from "../../store/hooks";
+import { useStoreActions, useStoreState } from "../../store/hooks";
 import { schema } from "./groupSchema";
 import { useRouter } from "next/router";
+import { TextField } from "../../components/TextField";
+import { Button } from "../../components/Button";
+import { AutoComplete } from "../../components/AutoComplete";
+import { IUser } from "../../store/model/user";
 
 export const GroupForm: FunctionComponent = () => {
   const router = useRouter();
   const setGroup = useStoreActions((actions) => actions.group.setGroups);
+  const users = useStoreState((state) => state.user.users);
   const formik = useFormik<Omit<IGroup, "id">>({
     initialValues: {
       name: "",
@@ -18,7 +23,7 @@ export const GroupForm: FunctionComponent = () => {
     onSubmit: (values) => {
       const result = setGroup(values);
       //@ts-ignore
-      router.replace(`/group/${result.payload.id}?created=today`)
+      router.replace(`/group/${result.payload.id}?created=today`);
     },
   });
 
@@ -44,39 +49,38 @@ export const GroupForm: FunctionComponent = () => {
     );
   };
 
+  const setUsers = useStoreActions((actions) => actions.user.setUsers);
+
   return (
     <form onSubmit={formik.handleSubmit}>
-      <section className="mb-4">
-        <label
-          className="block text-gray-700 text-sm font-bold mb-1"
-          htmlFor="name"
-        >
-          Name
-        </label>
-        <input
-          className="w-full py-2 pl-3 pr-10 text-left bg-white rounded-lg shadow-md cursor-default focus:outline-none focus-visible:ring-2 focus-visible:ring-opacity-75 focus-visible:ring-white focus-visible:ring-offset-orange-300 focus-visible:ring-offset-2 focus-visible:border-indigo-500 sm:text-sm"
-          id="name"
-          type="text"
-          placeholder="Name"
-          value={formik.values.name}
-          onChange={formik.handleChange}
-        />
-        {formik.errors.name && (
-          <span className="text-sm text-red-600">{formik.errors.name}</span>
-        )}
-      </section>
+      <TextField
+        label="Name"
+        id="name"
+        type="text"
+        placeholder="Name"
+        value={formik.values.name}
+        onChange={formik.handleChange}
+        errors={formik.errors.name}
+      />
       <section>
-        <UserSelection users={formik.values.users} handleUser={handleUser} />
+        <AutoComplete
+          onCreateNew={setUsers}
+          filterBy={"name"}
+          label={"Participant"}
+          id="users"
+          placeholder="Participant"
+          options={users as IUser[]}
+          onChange={handleUser}
+          getOptionLabel={(option) => option.name}
+          getOptionValue={(option) => option.id}
+          errors={formik.errors.users as string}
+        />
+        {/*<UserSelection users={formik.values.users} handleUser={handleUser} />*/}
         {formik.errors.users && (
           <span className="text-sm text-red-600">{formik.errors.users}</span>
         )}
       </section>
-      <button
-        type="submit"
-        className="bg-yellow-400 text-yellow-900 py-2 px-4 rounded-lg shadow-md"
-      >
-        Create Group
-      </button>
+      <Button type="submit">Create Group</Button>
     </form>
   );
 };

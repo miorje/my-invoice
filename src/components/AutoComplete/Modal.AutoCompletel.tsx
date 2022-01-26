@@ -12,6 +12,8 @@ export interface IModal<Generic> {
   handleOptionChange: (
     selection: Generic
   ) => (event: ChangeEvent<HTMLInputElement>) => void;
+  handleAddNew?: () => void;
+  isAllowedToCreateNew: Boolean;
 }
 
 export const Modal = <Generic extends object>({
@@ -23,6 +25,8 @@ export const Modal = <Generic extends object>({
   getOptionValue,
   handleOptionChange,
   selections,
+  handleAddNew,
+  isAllowedToCreateNew,
 }: IModal<Generic>) => {
   const selectionsValue = useMemo(
     () => selections.map((selections) => getOptionValue(selections)),
@@ -52,6 +56,15 @@ export const Modal = <Generic extends object>({
           {getOptionLabel(item)}
         </label>
       ))}
+      {isAllowedToCreateNew && (
+        <button
+          onClick={handleAddNew}
+          className="py-2 pl-4 text-blue-500"
+          type="button"
+        >
+          add new ›
+        </button>
+      )}
     </div>
   );
 };
