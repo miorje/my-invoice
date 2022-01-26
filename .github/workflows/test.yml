@@ -1,0 +1,36 @@
+name: Local Build Compiler
+on: buildprod
+jobs:
+  Test-Actions:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        node-version: [ 14.x ]
+    steps:
+      - name: Initial echo
+        run: echo "Starting ${{ github.event_name }}"
+      - uses: actions/checkout@v2
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v1
+        with:
+          node-version: ${{ matrix.node-version }}
+          cache: 'npm'
+      - name: Building Production Setup
+        run : |
+          npm install
+          npm audit fix
+      - name: Renaming package.json file
+        run : mv package.json old.json
+      - name: Installing sharp in new package
+        run: |
+          npm init -y
+          npm i sharp
+      - name: Reverse to orginal package.json
+        run : |
+          rm package-lock.json
+          mv old.json package.json
+      - name: Zip file
+        run : zip -r ../ekh-infosite-prod.zip *
+
+
+
