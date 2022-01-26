@@ -1,4 +1,4 @@
-name: Local Build Compiler
+name: Local Build Compiler Action
 on:
   pull_request_review:
     types:
