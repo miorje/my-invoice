@@ -1,5 +1,8 @@
 name: Local Build Compiler
-on: buildprod
+on:
+  pull_request_review:
+    types:
+      - submitted
 jobs:
   Test-Actions:
     runs-on: ubuntu-latest
@@ -29,8 +32,19 @@ jobs:
         run : |
           rm package-lock.json
           mv old.json package.json
-      - name: Zip file
-        run : zip -r ../ekh-infosite-prod.zip *
-
+#      - name: Zip file
+#        run : zip -r ../ekh-infosite-prod.zip *
+      - name: Archive Release
+        uses: thedoctor0/zip-release@master
+        with:
+          type: 'zip'
+          directory: '.'
+          filename: 'release.zip'
+          exclusions: '*.git* .editorconfig'
+      - name: Upload to git
+        uses: actions/upload-artifact@v1
+        with:
+          name: my-artifact
+          path: ${{ github.workspace }}/release.zip
 
 

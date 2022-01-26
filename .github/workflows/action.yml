@@ -17,17 +17,17 @@ jobs:
           cache: 'npm'
       - run: npm install
       - run: npm run build
-      - name: Archive Release
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'zip'
-          directory: '.'
-          filename: 'release.zip'
-          exclusions: '*.git* /*node_modules/* .editorconfig'
-      - name: Upload to git
-        uses: actions/upload-artifact@v1
-        with:
-          name: my-artifact
-          path: ${{ github.workspace }}/release.zip
+#      - name: Archive Release
+#        uses: thedoctor0/zip-release@master
+#        with:
+#          type: 'zip'
+#          directory: '.'
+#          filename: 'release.zip'
+#          exclusions: '*.git* .editorconfig'
+#      - name: Upload to git
+#        uses: actions/upload-artifact@v1
+#        with:
+#          name: my-artifact
+#          path: ${{ github.workspace }}/release.zip
 
 
