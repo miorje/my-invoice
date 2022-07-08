@@ -28,7 +28,7 @@ jobs:
       - name: Archive Release
         run: |
           base=$(basename $PWD)
-          echo "${{base}}"
+          echo "$base"
           tar_file_name=$base.tar.gz
           touch $tar_file_name
           tar -czf $tar_file_name --exclude=$tar_file_name .
