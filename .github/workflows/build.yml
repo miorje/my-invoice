@@ -1,16 +1,18 @@
-name: Local Build Compiler
+name: Custom Build
 on:
-  pull_request_review:
-    types:
-      - submitted
+  push:
+    # Pattern matched against refs/tags
+    tags:
+      - 'release/**'
+
 jobs:
   Test-Actions:
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        node-version: [ 14.x ]
+        node-version: [ 16.x ]
     steps:
-      - name: Initial echo
+      - name: Testing echo
         run: echo "Starting ${{ github.event_name }}"
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
@@ -18,20 +20,8 @@ jobs:
         with:
           node-version: ${{ matrix.node-version }}
           cache: 'npm'
-      - name: Building Production Setup
-        run : |
-          npm install
-          npm audit fix
-      - name: Renaming package.json file
-        run : mv package.json old.json
-      - name: Installing sharp in new package
-        run: |
-          npm init -y
-          npm i sharp
-      - name: Reverse to orginal package.json
-        run : |
-          rm package-lock.json
-          mv old.json package.json
+      - run: npm install
+      - run: npm run build
       - name: Archive Release
         uses: thedoctor0/zip-release@master
         with:
@@ -44,6 +34,5 @@ jobs:
         with:
           name: my-artifact
           path: ${{ github.workspace }}/release.zip
-      
 
 
