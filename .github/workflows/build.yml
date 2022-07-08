@@ -34,6 +34,6 @@ jobs:
         uses: actions/upload-artifact@v1
         with:
           name: my-artifact
-          path: ${{ github.workspace }}/${{tar_file_name}}.tar.gz
+          path: ${{ github.workspace }}/$tar_file_name.tar.gz
 
 
