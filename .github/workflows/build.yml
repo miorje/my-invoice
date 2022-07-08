@@ -31,11 +31,12 @@ jobs:
           echo "$base"
           tar_file_name=$base.tar.gz
           touch $tar_file_name
-          tar -czf $tar_file_name --exclude=$tar_file_name .
+          mkdir /artifact
+          tar -czf $tar_file_name --exclude=$tar_file_name . --directory=/artifact
       - name: Upload to git
         uses: actions/upload-artifact@v1
         with:
           name: my-artifact
-          path: ${{ github.workspace }}/$tar_file_name.tar.gz
+          path: /artifact
 
 
