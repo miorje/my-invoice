@@ -13,7 +13,9 @@ jobs:
         node-version: [ 16.x ]
     steps:
       - name: Testing echo
-        run: echo "Starting ${{ github.event_name }}"
+        run: |
+          echo "Starting ${{ github.event_name }}"
+          echo "Repo name ${{github.event.repository.name}}"
       - uses: actions/checkout@v2
       - name: Use Node.js ${{ matrix.node-version }}
         uses: actions/setup-node@v1
@@ -23,16 +25,15 @@ jobs:
       - run: npm install
       - run: npm run build
       - name: Archive Release
-        uses: thedoctor0/zip-release@master
-        with:
-          type: 'zip'
-          directory: '.'
-          filename: 'release.zip'
-          exclusions: '*.git* /*node_modules/* .editorconfig'
+        run: |
+          base=$(basename $PWD)
+          tar_file_name=$base.tar.gz
+          touch $tar_file_name
+          tar -czf $tar_file_name --exclude=$tar_file_name .
       - name: Upload to git
         uses: actions/upload-artifact@v1
         with:
           name: my-artifact
-          path: ${{ github.workspace }}/release.zip
+          path: ${{ github.workspace }}/*.gz
 
 
