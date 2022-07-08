@@ -1,5 +1,6 @@
 name: Custom Build
 on:
+  workflow_dispatch:
   push:
     # Pattern matched against refs/tags
     tags:
